@@ -289,6 +289,8 @@ public class ticTacToe extends javax.swing.JFrame {
             System.out.println("Enabled the AI for this round");
         } else {
             currentGameAI = false;
+            resultLabel.setText("Player 1's turn");
+            currentPlayer = "player1";
             System.out.println("Disabled the AI for this round");
         }
 
@@ -311,7 +313,7 @@ public class ticTacToe extends javax.swing.JFrame {
     }
 
     public static void claimSquare(JButton button) { // allows the player to select a button
-        if (playAI) { // for when playing against ai
+        if (currentGameAI == true) { // for when playing against ai
             button.setText("O"); // claims button
             System.out.println("Claimed square " + button.getName() + " for player"); // debug
 
@@ -319,9 +321,32 @@ public class ticTacToe extends javax.swing.JFrame {
             int column = Character.getNumericValue(button.getName().charAt(1)) - 1;
 
             playingBoard[row][column] = 'O'; // sets value in array
+
+            checkLine("player1"); // checks if there is a complete line and sends whose turn it was last (player)
+        } else {
+            if (currentPlayer == "player1") {
+                button.setText("O");
+                System.out.println("Claimed square " + button.getName() + " for player 1");
+
+                int row = Character.getNumericValue(button.getName().charAt(0)) - 10;
+                int col = Character.getNumericValue(button.getName().charAt(1)) - 1;
+
+                playingBoard[row][col] = 'O';
+
+                checkLine("player1"); // checks if there is a complete line and sends whose turn it was last (player)
+            } else {
+                button.setText("X");
+                System.out.println("Claimed square " + button.getName() + " for player 2");
+
+                int row = Character.getNumericValue(button.getName().charAt(0)) - 10;
+                int col = Character.getNumericValue(button.getName().charAt(1)) - 1;
+
+                playingBoard[row][col] = 'X';
+                
+                checkLine("player2");
+            }
         }
         button.setEnabled(false); // disable the button
-        checkLine("player1"); // checks if there is a complete line and sends whose turn it was last (player)
     }
 
     public static char findRow(int row) { // for finding a button row from array row
@@ -761,18 +786,30 @@ public class ticTacToe extends javax.swing.JFrame {
                     resultLabel.setText("The AI won");
                     System.out.println("AI win");
                 }
+            } else {
+                if (winningChar == 'O') {
+                    resultLabel.setText("Congrats! Player 1 won!");
+                    System.out.println("playwr 1 win");
+                } else {
+                    resultLabel.setText("Congrats! Player 2 won!");
+                    System.out.println("player 2 win");
+                }
             }
             continuePlaying = false; // stops playing
         }
 
-        if (continuePlaying == false) { // disabled every button
+        if (continuePlaying == false) { // disables every button
             for (JButton button : boardButtons) {
                 button.setEnabled(false);
             }
-        }
-
-        if (str == "player1" && currentGameAI == true && continuePlaying == true) { // check if ai should go next
-            aiMove();
+        } else {
+            if (str == "player1" && currentGameAI == true) { // check if ai should go next
+                aiMove();
+            } else if (str == "player1" && currentGameAI == false) {
+                resultLabel.setText("Player 2's turn");
+            } else if (str == "player2" && currentGameAI == false) {
+                resultLabel.setText("Player 1's turn");
+            }
         }
     }
 
